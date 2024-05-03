@@ -1,10 +1,11 @@
+
 package com.example.sobes.config;
 
 import jakarta.websocket.*;
 
 import java.net.URI;
 
-@ClientEndpoint
+@ClientEndpoint(subprotocols = "/websocket")
 public class WebSocketClient {
 
     @OnOpen
@@ -21,7 +22,7 @@ public class WebSocketClient {
     public static void connectToWebSocket() {
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         try {
-            URI uri = URI.create("ws://localhost:8081/websocket-endpoint");
+            URI uri = URI.create("ws://localhost:8081/websocket");
             container.connectToServer(WebSocketClient.class, uri);
         } catch (Exception e) {
             e.printStackTrace();
