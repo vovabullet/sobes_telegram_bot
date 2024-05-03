@@ -23,9 +23,12 @@ public class BotInitializer {
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
         try {
             telegramBotsApi.registerBot(bot);
+            WebSocketClient.connectToWebSocket(); //коннект к веб сокету
         } catch (TelegramApiException e) {
             // логи
             log.error("Error: " + e.getMessage());
         }
     }
+
+
 }

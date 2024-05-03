@@ -23,6 +23,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     static final String HELP_TEXT = "This bot created to demonstration.\n\n" +
             "You can execute commands from the main menu.\n\n" +
             "Type /start to greet the bot\n" +
+            "Type /listcheck to check the list\n" +
             "Type /help to show this help message";
 
     // menu
@@ -31,6 +32,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         List<BotCommand> listOfCommands = new ArrayList<>();
         listOfCommands.add(new BotCommand("/start", "get a welcome message"));
         listOfCommands.add(new BotCommand("/help", "info how to use this bot"));
+        listOfCommands.add(new BotCommand("/listcheck", "info how to use this bot"));
         try {
             this.execute(new SetMyCommands(listOfCommands, new BotCommandScopeDefault(), null));
 
@@ -68,12 +70,19 @@ public class TelegramBot extends TelegramLongPollingBot {
                     sendMessage(chatId, HELP_TEXT);
                     log.info(userName + " displayed a list of commands");
                     break;
+                case "/listcheck":
+                    String[] array = { ".", ".", ".", ",", "."};
+                    for (String item : array) {
+                        if (item.contains(",")) {
+                            sendMessage(chatId, "character ',' found in the list");
+                        }
+                    }
+                    break;
                 default:
                     sendMessage(chatId, "Command not found");
                     log.info(userName + " entered a non-existent command");
             }
         }
-
     }
 
     private void startCommandReceived(long chatId, String name){
