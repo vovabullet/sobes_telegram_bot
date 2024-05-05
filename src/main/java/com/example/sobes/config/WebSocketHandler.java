@@ -5,6 +5,8 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.io.IOException;
+
 @Component
 public class WebSocketHandler extends TextWebSocketHandler {
 
@@ -27,6 +29,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
                 break;
             case "/listcheck":
                 listCheckCommandReceived(session);
+                break;
+            case "/timer":
+                startSendingMessagesEverySecond(session);
                 break;
             default:
                 sendMessage(session, "Command not found");
@@ -51,5 +56,26 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     private void sendMessage(WebSocketSession session, String textToSend) throws Exception {
         session.sendMessage(new TextMessage(textToSend));
+    }
+
+    // открывается веб-сокет сессия
+    private void startSendingMessagesEverySecond(WebSocketSession session) {
+        new Thread(() -> {
+            try {
+                for (int i = 0; i < 60; i++) { // 60 сообщений (1 минута)
+                    if (session.isOpen()) {
+                        sendMessage(session, "Message " + i);
+                        Thread.sleep(1000);
+                    } else {
+                        break; // Прекратить отправку, если сессия закрылась
+                    }
+                }
+            } catch (InterruptedException | IOException e) {
+                // Обработка исключения
+                e.printStackTrace();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
     }
 }

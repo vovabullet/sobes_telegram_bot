@@ -11,18 +11,24 @@ import org.springframework.web.socket.config.annotation.*;
 @EnableWebSocketMessageBroker //предоставляет методы для отправки сообщений клиентам в приложениях с использованием простых сообщений (SIMP) через веб-сокеты.
 public class WebSocketConfig implements WebSocketConfigurer, WebSocketMessageBrokerConfigurer {
 
-    private final WebSocketHandler customWebSocketHandler;
+    private final WebSocketHandler WebSocketHandler;
 
     @Autowired
     public WebSocketConfig(WebSocketHandler webSocketHandler) {
-        this.customWebSocketHandler = webSocketHandler;
+        this.WebSocketHandler = webSocketHandler;
     }
 
     // регистрируются конечные точки STOMP, к которым клиенты будут подключаться
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(customWebSocketHandler, "/websocket").setAllowedOrigins("*");
+        registry.addHandler(WebSocketHandler, "/native-websocket").setAllowedOrigins("*");
     }
+
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/websocket").setAllowedOrigins("*").withSockJS();
+    }
+
 
     // Настройка простого брокера сообщений и префиксов назначений
     @Override

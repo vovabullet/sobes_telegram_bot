@@ -28,11 +28,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- больше не нужен, т.к. использую веб сокет
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots</artifactId>
             <version>5.6.0</version>
         </dependency>
+        -->
 
         <!-- более удобная манипуляция с классами -->
         <dependency>

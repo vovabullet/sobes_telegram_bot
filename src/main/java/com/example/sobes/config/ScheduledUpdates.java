@@ -1,4 +1,3 @@
-/*
 package com.example.sobes.config;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -22,6 +21,3 @@ public class ScheduledUpdates {
         messagingTemplate.convertAndSend("/topic/messages", message);
     }
 }
-
-
- */
