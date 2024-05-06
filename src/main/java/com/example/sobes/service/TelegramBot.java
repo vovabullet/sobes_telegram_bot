@@ -1,6 +1,8 @@
 package com.example.sobes.service;
 
 import com.example.sobes.config.BotConfig;
+import com.example.sobes.config.WebSocketClientExample;
+import com.example.sobes.controller.SocketTextHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -11,6 +13,9 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,15 +23,43 @@ import java.util.List;
 @Component
 public class TelegramBot extends TelegramLongPollingBot {
 
+    private SocketTextHandler socketTextHandler;
     final BotConfig botConfig;
     final String TARGET_CHAR = String.valueOf(',');
-
     static final String HELP_TEXT = "This bot created to demonstration.\n\n" +
             "You can execute commands from the main menu.\n\n" +
             "Type /start to greet the bot\n" +
             "Type /checkthis to check list for symbol '"  + "'\n" +
             "Type /timer to start timer\n" +
             "Type /help to show this help message";
+
+    private WebSocketClientExample wsClient;
+
+
+    public TelegramBot(BotConfig botConfig, SocketTextHandler socketTextHandler) {
+        this.socketTextHandler = socketTextHandler;
+        this.botConfig = botConfig;
+        try {
+            SocketTextHandler handler = new SocketTextHandler();
+            wsClient = new WebSocketClientExample(handler, new URI("ws://localhost:8080/ws"));
+            wsClient.connect();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void checkThis(long chatId, String text) {
+        // Отправляем сообщение через WebSocket
+        try {
+            socketTextHandler.send(text);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Обработка ответа происходит в onMessage WebSocket клиента
+    }
+
+
 
     // menu
     public TelegramBot(BotConfig botConfig) {
@@ -101,15 +134,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         String answer = "Hi, " + name + ", nice to meet you!";
         log.info("Replied to user " + name);
         sendMessage(chatId, answer);
-    }
-
-    private void checkThis(long chatId, String text) {
-        String answer = "There is no '" + TARGET_CHAR + "' in the line";;
-        if (text.contains(TARGET_CHAR))
-            answer = "The line contains ','";
-
-        sendMessage(chatId, answer);
-        log.info("and got the following response: " + answer);
     }
 
     private void sendMessage(long chatId, String textToSand) {
