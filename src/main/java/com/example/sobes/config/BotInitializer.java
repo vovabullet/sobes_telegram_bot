@@ -1,20 +1,31 @@
 package com.example.sobes.config;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
+import com.example.sobes.service.TelegramBot;
 
-@Slf4j
+
 @Component
+@Slf4j
+@AllArgsConstructor
 public class BotInitializer {
 
+    TelegramBot bot;
+
     @EventListener({ContextRefreshedEvent.class})
-    public void init() {
+    public void init() throws TelegramApiException {
+        TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
         try {
-            WebSocketClient.connectToWebSocket(); // Подключение к веб-сокету
-        } catch (Exception e) {
-            log.error("Error connecting to WebSocket: " + e.getMessage());
+            telegramBotsApi.registerBot(bot);
+        } catch (TelegramApiRequestException e) {
+            log.error(e.getMessage());
         }
     }
 }
