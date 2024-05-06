@@ -14,8 +14,6 @@ import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScope
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,11 +23,11 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private SocketTextHandler socketTextHandler;
     final BotConfig botConfig;
-    final String TARGET_CHAR = String.valueOf(',');
+
     static final String HELP_TEXT = "This bot created to demonstration.\n\n" +
             "You can execute commands from the main menu.\n\n" +
             "Type /start to greet the bot\n" +
-            "Type /checkthis to check list for symbol '"  + "'\n" +
+            "Type /checkthis to check list for symbol\n" +
             "Type /timer to start timer\n" +
             "Type /help to show this help message";
 
@@ -37,43 +35,32 @@ public class TelegramBot extends TelegramLongPollingBot {
 
 
     public TelegramBot(BotConfig botConfig, SocketTextHandler socketTextHandler) {
-        this.socketTextHandler = socketTextHandler;
-        this.botConfig = botConfig;
-        try {
-            SocketTextHandler handler = new SocketTextHandler();
-            wsClient = new WebSocketClientExample(handler, new URI("ws://localhost:8080/ws"));
+
+            this.socketTextHandler = socketTextHandler;
+            this.botConfig = botConfig;
+            wsClient = new WebSocketClientExample(socketTextHandler);
             wsClient.connect();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-    }
 
-    public void checkThis(long chatId, String text) {
-        // Отправляем сообщение через WebSocket
-        try {
-            socketTextHandler.send(text);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // Обработка ответа происходит в onMessage WebSocket клиента
-    }
-
-
-
-    // menu
-    public TelegramBot(BotConfig botConfig) {
-        this.botConfig = botConfig;
+        //меню
         List<BotCommand> listOfCommands = new ArrayList<>();
         listOfCommands.add(new BotCommand("/start", "get a welcome message"));
         listOfCommands.add(new BotCommand("/help", "info how to use this bot"));
-        listOfCommands.add(new BotCommand("/checkthis", "check list for symbol '" + TARGET_CHAR + "'"));
+        listOfCommands.add(new BotCommand("/checkthis", "check list for symbol"));
         listOfCommands.add(new BotCommand("/timer", "start timer"));
         try {
             this.execute(new SetMyCommands(listOfCommands, new BotCommandScopeDefault(), null));
 
         } catch (TelegramApiException e) {
             log.error("Error setting bot's command list: " + e.getMessage());
+        }
+    }
+
+    public void checkThis(long chatId, String text) {
+        // Отправляем сообщение через WebSocket
+        try {
+            socketTextHandler.send(text + "\u200B" + chatId);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -136,7 +123,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         sendMessage(chatId, answer);
     }
 
-    private void sendMessage(long chatId, String textToSand) {
+    public void sendMessage(long chatId, String textToSand) {
         // класс SendMessage позволяет послать сообщение
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));

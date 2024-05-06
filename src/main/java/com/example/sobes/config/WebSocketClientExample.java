@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.client.WebSocketConnectionManager;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.WebSocketHandler;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -15,7 +16,7 @@ import java.net.URISyntaxException;
 @PropertySource("application.properties")
 public class WebSocketClientExample {
 
-    @Value("${websocket.server.url}")
+    @Value("${websocket.url}")
     private String webSocketServerUrl;
 
     private WebSocketConnectionManager connectionManager;
@@ -44,6 +45,4 @@ public class WebSocketClientExample {
             this.connectionManager.stop();
         }
     }
-
-
 }

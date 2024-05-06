@@ -3,6 +3,7 @@ package com.example.sobes.controller;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 import java.io.IOException;
 
@@ -24,9 +25,19 @@ public class SocketTextHandler extends TextWebSocketHandler implements WebSocket
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) {
         String TARGET_CHAR = String.valueOf(',');
+        String[] text = message.getPayload().split("\u200B");
         String answer = "There is no '" + TARGET_CHAR + "' in the line";;
-        if (message.getPayload().contains(TARGET_CHAR))
-            answer = "The line contains ','";
-        // тут answer должен отпралвяться опять в класс TelegramBot, в метод checkThis
+        if (text[0].contains(TARGET_CHAR))
+            answer = "The line contains '" + TARGET_CHAR + "' in the line";
+
+        sendMessage(Long.parseLong(text[1]), answer);
+
+    }
+
+    public void sendMessage(long chatId, String textToSand) {
+        // класс SendMessage позволяет послать сообщение
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(String.valueOf(chatId));
+        sendMessage.setText(textToSand);
     }
 }
