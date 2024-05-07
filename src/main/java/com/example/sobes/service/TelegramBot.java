@@ -4,6 +4,7 @@ import com.example.sobes.config.BotConfig;
 import com.example.sobes.config.WebSocketClientExample;
 import com.example.sobes.controller.SocketTextHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
@@ -135,6 +136,11 @@ public class TelegramBot extends TelegramLongPollingBot {
         catch (TelegramApiException e) {
             log.error("Error: " + e.getMessage());
         }
+    }
+
+    @EventListener
+    public void onTelegramMessageEvent(TelegramMessageEvent event) {
+        sendMessage(event.getChatId(), event.getMessage());
     }
 
 }

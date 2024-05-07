@@ -16,8 +16,8 @@ import java.net.URISyntaxException;
 @PropertySource("application.properties")
 public class WebSocketClientExample {
 
-    @Value("${websocket.url}")
-    private String webSocketServerUrl;
+    //@Value("${websocket.url}")
+    private String webSocketServerUrl = "ws://localhost:8081/ws";
 
     private WebSocketConnectionManager connectionManager;
 
@@ -30,6 +30,7 @@ public class WebSocketClientExample {
     @PostConstruct
     public void connect() {
         try {
+            System.out.println("WebSocket URL: " + webSocketServerUrl); // Для отладки
             URI serverUri = new URI(webSocketServerUrl);
             StandardWebSocketClient client = new StandardWebSocketClient();
             this.connectionManager = new WebSocketConnectionManager(client, webSocketHandler, serverUri.toString());
